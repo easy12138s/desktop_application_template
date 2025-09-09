@@ -199,13 +199,12 @@ export default {
         const [userStats, docStats, settingsStats] = await Promise.all([
           apiServices.users.getUserStatistics(),
           apiServices.documents.getDocumentStatistics(),
-          // 设置统计可能需要单独实现
-          Promise.resolve({ total: 0 })
+          apiServices.settings.getSettingsStatistics()
         ])
 
-        Object.assign(stats.users, userStats)
-        Object.assign(stats.documents, docStats)
-        Object.assign(stats.settings, settingsStats)
+        Object.assign(stats.users, userStats.data || userStats)
+        Object.assign(stats.documents, docStats.data || docStats)
+        Object.assign(stats.settings, settingsStats.data || settingsStats)
       } catch (error) {
         console.error('加载统计数据失败:', error)
         showMessage('加载统计数据失败', 'error')
@@ -214,8 +213,8 @@ export default {
 
     const loadDatabaseInfo = async () => {
       try {
-        const info = await window.electronAPI.database.info()
-        dbInfo.value = info
+        const response = await window.electronAPI.database.info()
+        dbInfo.value = response.data || response
       } catch (error) {
         console.error('获取数据库信息失败:', error)
         showMessage('获取数据库信息失败', 'error')
