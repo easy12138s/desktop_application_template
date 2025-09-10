@@ -67,6 +67,25 @@
           </button>
         </div>
       </div>
+
+      <!-- 滚动条展示区域 -->
+      <div class="scroll-demo">
+        <h3 class="section-title">滚动条效果展示</h3>
+        <div class="scroll-content">
+          <div class="content-item" v-for="i in 20" :key="i">
+            <div class="item-number">{{ i }}</div>
+            <div class="item-content">
+              <h4>示例内容 {{ i }}</h4>
+              <p>这是第 {{ i }} 个示例内容，用于展示优化后的滚动条效果。滚动条采用了现代化的设计，具有圆角、渐变和悬停动画效果。</p>
+              <div class="item-tags">
+                <span class="tag">示例 {{ i }}</span>
+                <span class="tag">滚动条</span>
+                <span class="tag">美观</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- 关于对话框 -->
@@ -361,6 +380,73 @@ export default {
   border-top: 1px solid #eee;
   display: flex;
   justify-content: flex-end;
+}
+
+.scroll-demo {
+  margin: 3rem 0;
+}
+
+.scroll-content {
+  max-height: 400px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.content-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.content-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.item-number {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+}
+
+.item-content h4 {
+  margin: 0 0 0.5rem 0;
+  color: white;
+  font-weight: 600;
+}
+
+.item-content p {
+  margin: 0 0 0.5rem 0;
+  opacity: 0.8;
+  line-height: 1.5;
+}
+
+.item-tags {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.tag {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
 }
 
 @media (max-width: 768px) {

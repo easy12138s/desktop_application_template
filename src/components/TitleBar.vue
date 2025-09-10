@@ -3,6 +3,12 @@
     <div class="title-bar-drag">
       <div class="app-title">{{ appTitle }}</div>
     </div>
+    
+    <!-- 用户管理按钮 -->
+    <div class="user-controls">
+      <UserManager />
+    </div>
+    
     <div class="window-controls">
       <button 
         class="window-btn minimize" 
@@ -38,16 +44,26 @@
 </template>
 
 <script>
+import UserManager from './UserManager.vue'
+
 export default {
   name: 'TitleBar',
+  components: {
+    UserManager
+  },
   data() {
     return {
       appTitle: 'EasyBox',
       isMaximized: false,
-      isWindows: process.platform === 'win32'
+      isWindows: false
     }
   },
-  mounted() {
+  async mounted() {
+    // 检测当前平台
+    if (window.electronAPI && window.electronAPI.platform) {
+      this.isWindows = await window.electronAPI.platform.isWindows()
+    }
+    
     // 监听窗口状态变化
     this.getWindowState()
     window.addEventListener('resize', this.getWindowState)
@@ -159,6 +175,16 @@ export default {
 
 .window-btn:disabled:hover {
   background: transparent;
+}
+
+/* 用户管理控制区域 */
+.user-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  -webkit-app-region: no-drag;
+  margin-right: auto;
+  margin-left: 1rem;
 }
 
 /* 针对不同操作系统的样式调整 */

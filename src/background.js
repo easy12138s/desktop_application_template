@@ -6,6 +6,10 @@ import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const path = require('path')
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
+// 引入数据库服务
+const { getDatabase } = require('./services/database.js')
+const { getUserService } = require('./services/userService.js')
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } }
@@ -61,32 +65,152 @@ function registerIpcHandlers() {
   })
 
   // 窗口控制
-  ipcMain.handle('window-minimize', () => {
+  ipcMain.on('window-minimize', () => {
     const win = BrowserWindow.getFocusedWindow()
     if (win) win.minimize()
   })
 
-  ipcMain.handle('window-maximize', () => {
+  ipcMain.on('window-maximize', () => {
     const win = BrowserWindow.getFocusedWindow()
     if (win) win.maximize()
   })
 
-  ipcMain.handle('window-unmaximize', () => {
+  ipcMain.on('window-unmaximize', () => {
     const win = BrowserWindow.getFocusedWindow()
     if (win) win.unmaximize()
   })
 
-  ipcMain.handle('window-close', () => {
+  ipcMain.on('window-close', () => {
     const win = BrowserWindow.getFocusedWindow()
     if (win) win.close()
   })
 
-  // 监听窗口状态变化
-  ipcMain.on('get-window-state', (event) => {
-    const win = BrowserWindow.fromWebContents(event.sender)
-    if (win) {
-      event.reply('window-maximized', win.isMaximized())
-      event.reply('window-unmaximized', !win.isMaximized())
+  // 获取窗口状态
+  ipcMain.handle('get-window-state', async () => {
+    const win = BrowserWindow.getFocusedWindow()
+    return win ? win.isMaximized() : false
+  })
+
+  // 数据库相关IPC处理器
+  ipcMain.handle('db-init', async () => {
+    try {
+      const db = getDatabase()
+      await db.init()
+      return { success: true }
+    } catch (error) {
+      console.error('数据库初始化失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('db-query', async (event, sql, params = []) => {
+    try {
+      const db = getDatabase()
+      const result = await db.all(sql, params)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('数据库查询失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('db-run', async (event, sql, params = []) => {
+    try {
+      const db = getDatabase()
+      const result = await db.run(sql, params)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('数据库执行失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('db-get', async (event, sql, params = []) => {
+    try {
+      const db = getDatabase()
+      const result = await db.get(sql, params)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('数据库获取失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  // 用户管理相关IPC处理器
+  ipcMain.handle('user-init', async () => {
+    try {
+      const userService = getUserService()
+      await userService.init()
+      return { success: true }
+    } catch (error) {
+      console.error('用户服务初始化失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('user-get-all', async () => {
+    try {
+      const userService = getUserService()
+      const result = await userService.getAllUsers()
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('获取用户列表失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('user-add', async (event, userData) => {
+    try {
+      const userService = getUserService()
+      const result = await userService.addUser(userData)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('添加用户失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('user-update', async (event, userData) => {
+    try {
+      const userService = getUserService()
+      const result = await userService.updateUser(userData)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('更新用户失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('user-delete', async (event, userId) => {
+    try {
+      const userService = getUserService()
+      const result = await userService.deleteUser(userId)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('删除用户失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('user-username-exists', async (event, username, excludeId) => {
+    try {
+      const userService = getUserService()
+      const result = await userService.usernameExists(username, excludeId)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('检查用户名失败:', error)
+      return { success: false, error: error.message }
+    }
+  })
+
+  ipcMain.handle('user-email-exists', async (event, email, excludeId) => {
+    try {
+      const userService = getUserService()
+      const result = await userService.emailExists(email, excludeId)
+      return { success: true, data: result }
+    } catch (error) {
+      console.error('检查邮箱失败:', error)
+      return { success: false, error: error.message }
     }
   })
 }

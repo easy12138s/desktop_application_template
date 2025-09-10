@@ -52,6 +52,45 @@ body {
 .app-content {
   flex: 1;
   overflow: auto;
+  position: relative;
+  background: #ffffff;
+}
+
+/* 内容区域滚动条优化 */
+.app-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.app-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.app-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.app-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8, #6a4190);
+  transform: scale(1.1);
+}
+
+/* 暗色主题支持 */
+@media (prefers-color-scheme: dark) {
+  .app-content {
+    background: #1a1a1a;
+    color: #ffffff;
+  }
+  
+  .app-content::-webkit-scrollbar-track {
+    background: #2a2a2a;
+  }
+  
+  .app-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+  }
 }
 
 /* 通用工具类 */

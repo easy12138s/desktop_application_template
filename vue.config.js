@@ -3,8 +3,8 @@ module.exports = defineConfig({
   transpileDependencies: true,
   pluginOptions: {
     electronBuilder: {
-      nodeIntegration: false,
-      externals: ['sqlite3'],
+        nodeIntegration: false,
+        externals: ['better-sqlite3'],
       preload: 'src/preload.js',
       builderOptions: {
         // 确保原生模块正确打包
@@ -34,7 +34,7 @@ module.exports = defineConfig({
   },
   configureWebpack: {
     externals: {
-      'sqlite3': 'commonjs sqlite3'
+      'better-sqlite3': 'commonjs better-sqlite3'
     },
     resolve: {
       fallback: {
