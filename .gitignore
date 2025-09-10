@@ -54,6 +54,8 @@ coverage/
 # 可选的REPL历史
 .node_repl_history
 
+.qoder
+.gitignore
 # 输出目录
 dist/
 dist-ssr/
